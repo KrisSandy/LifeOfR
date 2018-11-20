@@ -1,0 +1,218 @@
+---
+title: "Untitled"
+author: "SandyBoy"
+date: "October 11, 2018"
+output: html_document
+---
+
+```{r}
+library(readxl)
+library(ggplot2)
+
+orig_list <- data.frame(readxl::read_excel("titanic3_assignment.xls"))
+plist <- orig_list
+
+dim(plist)
+
+summary(plist)
+
+#1 
+plist$survived <- as.logical(plist$survived)
+summary(plist)
+
+#2
+plist$pclass <- ifelse(plist$pclass==1, "First", ifelse(plist$pclass==2, "Second", "Third"))
+summary(plist)
+
+unique(plist$pclass)
+
+#3
+plist[!complete.cases(plist$age),]["age"] <- mean(plist$age, na.rm = T) 
+summary(plist)
+
+#4
+plist[!complete.cases(plist$fare),]["fare"] <- mean(plist$fare, na.rm = T) 
+summary(plist)
+
+#5
+set.seed(99)
+plist[is.na(plist$embarked), c("embarked")] <- sample(c("S", "C", "Q"), sum(is.na(plist$embarked)), replace = T)
+summary(plist)
+
+#6
+plist$age_cohort <- ifelse(plist$age<16, "Child", ifelse(plist$age>=16 & plist$age<60, "Adults", "Elderly"))
+summary(plist)
+
+#7
+plist$embarked <- ifelse(plist$embarked=="Q", "Cobh", ifelse(plist$embarked=="C", "Cherbourg", "Southampton"))
+summary(plist)
+
+#8
+head(plist)
+dim(plist)
+table(plist$survived)
+table(plist$survived, plist$age_cohort)
+table(plist$survived, plist$sex)
+table(plist$survived, plist$pclass)
+table(plist$survived, plist$embarked)
+
+```
+
+## plot 1
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = pclass)) +
+  ggtitle("Survival Number by Travel Class") +
+  ylab("Number") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot2
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = sex)) +
+  ggtitle("Survival Number by Gender") +
+  ylab("Number") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 3
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = age_cohort)) +
+  ggtitle("Survival Number by Age Cohort") +
+  ylab("Number") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+
+## plot 4
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = embarked)) +
+  ggtitle("Survival Number by Embarkation Location") +
+  ylab("Number") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 5
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = pclass), position = "fill") +
+  ggtitle("Survival Proportions by Class") +
+  ylab("Proportion") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 6
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = sex), position = "fill") +
+  ggtitle("Survival Proportions by Gender") +
+  ylab("Proportion") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 7
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = age_cohort), position = "fill") +
+  ggtitle("Survival Proportions by Age Cohort") +
+  ylab("Proportion") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 8
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = embarked), position = "fill") +
+  ggtitle("Survival Proportions by place of Embarkation") +
+  ylab("Proportion") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 9
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = age_cohort)) +
+  ggtitle("Survival Numbers by Cohort and Travel Class") +
+  facet_grid(~ pclass) +
+  ylab("Number") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 10
+
+```{r}
+ggplot(plist, aes(x = survived)) +
+  geom_bar(aes(fill = sex)) +
+  ggtitle("Survival Numbers by Gender and Travel Class") +
+  facet_grid(~ pclass) +
+  ylab("Number") +
+  xlab("Survived") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 11
+
+```{r}
+ggplot(plist, aes(x = age, y = fare)) +
+  geom_point(aes(color = embarked)) +
+  ggtitle("Age v Fare by Place of Embarkation") +
+  ylab("Fare") +
+  xlab("Age") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+## plot 12
+
+```{r}
+ggplot(plist, aes(x = age, y = fare)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("Age v Fare with Linear Model") +
+  ylab("Fare") +
+  xlab("Age")
+```
+
+## plot 13
+
+```{r}
+ggplot(plist, aes(x = age, y = fare)) +
+  geom_point(aes(color = survived)) +
+  ggtitle("Age v Fare with Survival Info") +
+  ylab("Fare") +
+  xlab("Age") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
+
+
+## plot 11
+
+```{r}
+ggplot(plist, aes(x = age, y = fare)) +
+  geom_point(aes(color = embarked)) +
+  ggtitle("Age v Fare By Travel Class and Place of Departure") +
+  facet_grid(~ pclass) +
+  ylab("Fare") +
+  xlab("Age") +
+  theme(legend.position = "top", legend.title = element_blank())
+```
